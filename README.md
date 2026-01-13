@@ -6,7 +6,7 @@
 [README.md](https://github.com/user-attachments/files/24584063/README.md)
 [PRIMEROS_PASOS.txt](https://github.com/user-attachments/files/24584062/PRIMEROS_PASOS.txt)
 [INSTALACION_COMPLETA.txt](https://github.com/user-attachments/files/24584061/INSTALACION_COMPLETA.txt)
-[INDEX.md](https://github.com/user-attachments/files/24584060/INDEX.md)
+
 [index.html](https://github.com/user-attachments/files/24584058/index.html)
 [GUIA_RAPIDA.txt](https://github.com/user-attachments/files/24584057/GUIA_RAPIDA.txt)
 [firebase.js](https://github.com/user-attachments/files/24584055/firebase.js)
