@@ -15,8 +15,9 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+
 /* ======================================================
-   UTILIDADES INTERNAS (ROBUSTEZ)
+   🔧 UTILIDADES INTERNAS
 ====================================================== */
 
 function toNumber(value) {
@@ -44,17 +45,20 @@ function calcularTotalSeguro(productos) {
 }
 
 /* ======================================================
-   ✅ CREAR VENTA (ÚNICO PUNTO DE ENTRADA)
+   ✅ CREAR VENTA
 ====================================================== */
 
 export async function crearVenta({
   productos = [],
   total = null,
+
+  nombre = "",
+  apellido = "",
   telefono = "",
   direccion = "",
+
   metodo = "Efectivo",
-  entrega = "Retiro",
-  notas = ""
+  entrega = "Retiro"
 }) {
   try {
     const listaProductos = ensureArray(productos).map((p) => ({
@@ -83,17 +87,22 @@ export async function crearVenta({
       total !== null ? toNumber(total) : calcularTotalSeguro(listaProductos);
 
     const payload = {
-      productos: listaProductos,
-      total: totalFinal,
-
+      // 👤 CLIENTE
+      nombre: cleanString(nombre),
+      apellido: cleanString(apellido),
       telefono: cleanPhone(telefono),
       direccion: direccionFinal,
+
+      // 📦 PEDIDO
+      productos: listaProductos,
+      total: totalFinal,
       metodo: cleanString(metodo) || "Efectivo",
       entrega: entregaFinal,
-      notas: cleanString(notas),
 
+      // 🔄 ESTADO
       estado: "Pendiente",
 
+      // ⏱️ FECHAS
       timestamp: serverTimestamp(),
       createdAtISO: new Date().toISOString()
     };
@@ -110,7 +119,7 @@ export async function crearVenta({
 }
 
 /* ======================================================
-   🔥 CARGA DE VENTAS EN TIEMPO REAL (ADMIN / REPORTES)
+   🔥 CARGA DE VENTAS EN TIEMPO REAL (ADMIN)
 ====================================================== */
 
 export function cargarVentasEnTiempoReal(callback) {

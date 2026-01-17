@@ -617,3 +617,104 @@ table img {
   color: #ffcc80;
   margin-top: 6px;
 }
+/* ===============================
+   📦 PEDIDOS EN VIVO (MEJORADO)
+================================ */
+
+.pedidos-list {
+  display: grid;
+  gap: 18px;
+}
+
+.pedido-card {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  border: 1px solid #00ff88;
+  border-radius: 14px;
+  padding: 16px;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(0,255,136,.15);
+}
+
+.pedido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pedido-total {
+  font-size: 22px;
+  font-weight: 900;
+  color: #00ff88;
+}
+
+.estado {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.estado-Pendiente { background:#ff9800; color:#000; }
+.estado-Preparando { background:#2196f3; }
+.estado-Listo { background:#00e676; color:#000; }
+.estado-Entregado { background:#4caf50; }
+.estado-Cancelado { background:#f44336; }
+
+.pedido-info {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.pedido-items {
+  background: rgba(0,0,0,.3);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.pedido-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-aceptar { background:#00e676; color:#000; }
+.btn-cancelar { background:#f44336; color:#fff; }
+.btn-wsp { background:#25D366; color:#000; }
+.btn-estado { background:#2196f3; color:#fff; }
+/* Pedido nuevo */
+.pedido-nuevo {
+  border: 2px solid #00ff66;
+  box-shadow: 0 0 15px rgba(0,255,100,0.6);
+  animation: parpadeoPedido 1.2s infinite alternate;
+}
+
+@keyframes parpadeoPedido {
+  from {
+    background: rgba(0,255,100,0.08);
+  }
+  to {
+    background: rgba(0,255,100,0.18);
+  }
+}
+
+/* Badge NUEVO */
+.badge-nuevo {
+  display: inline-block;
+  background: #00ff66;
+  color: #000;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-top: 6px;
+}

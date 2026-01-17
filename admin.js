@@ -1,6 +1,9 @@
 // ============================
 // IMPORTS FIREBASE
 // ============================
+
+
+
 import { auth, db, storage } from "./firebase.js";
 
 import {
@@ -455,32 +458,56 @@ function renderPedidos(ventas) {
   if (!cont) return;
 
   let filtradas = ventas;
-
   if (filtroPedidos !== "todos") {
     filtradas = ventas.filter(v => (v.estado || "Pendiente") === filtroPedidos);
   }
 
   if (filtradas.length === 0) {
-    cont.innerHTML = `<div style="text-align:center; padding:30px; color:#888;">No hay pedidos</div>`;
+    cont.innerHTML = "<p style='color:#888'>No hay pedidos</p>";
     return;
   }
 
-  cont.innerHTML = filtradas.map((p) => {
-    const fecha = formatearFechaPedido(p);
-    const total = p.total || 0;
+  cont.innerHTML = filtradas.map(p => {
     const estado = p.estado || "Pendiente";
-    const esNuevo = p.__nuevo === true;
 
-    const itemsHTML = (p.productos || []).map(prod => {
-      const nombre = prod.nombre || "Producto";
-      const precio = prod.precio || 0;
-      return `<div>• ${nombre} - $${precio}</div>`;
-    }).join("");
+    const items = (p.productos || [])
+      .map(i => `• ${i.nombre} - $${i.precio}`)
+      .join("<br>");
 
-    const entrega = p.entrega || "No especificado";
-    const metodo = p.metodo || "No especificado";
-    const direccion = p.direccion || "Retiro";
-    const tel = p.telefono || "";
+    return `
+      <div class="pedido-card">
+        <div class="pedido-header">
+          <div class="pedido-total">$${p.total}</div>
+          <div class="estado estado-${estado}">${estado}</div>
+        </div>
+
+        <div class="pedido-info">
+          📞 ${p.telefono || "Sin teléfono"} <br>
+          🚚 ${p.entrega} <br>
+          ${p.entrega?.toLowerCase().includes("env") ? `📍 ${p.direccion}` : ""}
+        </div>
+
+        <div class="pedido-items">${items}</div>
+
+        <div class="pedido-actions">
+          ${botonesSegunEstado(p)}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+const entrega = p.entrega || "No especificado";
+
+let direccionTexto = "📍 Retiro en el local";
+if (
+  entrega.toLowerCase().includes("env") &&
+  p.direccion &&
+  p.direccion.trim() !== ""
+) {
+  direccionTexto = `📍 ${p.direccion}`;
+}
+
 
     return `
       <div class="pedido-card ${esNuevo ? "pedido-nuevo" : ""}">
@@ -519,11 +546,73 @@ function renderPedidos(ventas) {
         </div>
       </div>
     `;
-  }).join("");
+  
+function botonesPedido(p) {
+  const pedidoStr = JSON.stringify(p).replace(/"/g, '&quot;');
+
+  return `
+    ${p.estado === "Pendiente" ? `
+      <button class="btn btn-aceptar"
+        onclick="cambiarEstadoPedido('${p.id}','Preparando')">
+        ✅ Aceptar
+      </button>
+      <button class="btn btn-cancelar"
+        onclick="cambiarEstadoPedido('${p.id}','Cancelado')">
+        ❌ Cancelar
+      </button>
+    ` : ""}
+
+    ${p.estado === "Preparando" ? `
+      <button class="btn btn-estado"
+        onclick="cambiarEstadoPedido('${p.id}','Listo')">
+        📦 Listo
+      </button>
+    ` : ""}
+
+    ${p.estado === "Listo" ? `
+      <button class="btn btn-estado"
+        onclick="cambiarEstadoPedido('${p.id}','Entregado')">
+        ✅ Entregado
+      </button>
+    ` : ""}
+
+    <button class="btn btn-wsp"
+      onclick="enviarWhatsAppCliente(${pedidoStr})">
+      📲 WhatsApp
+    </button>
+  `;
 }
 
-function botonesSegunEstado(id, estado, telefono, total) {
-  const telLimpio = limpiarTelefono(telefono);
+async function cambiarEstado(id, nuevoEstado) {
+  const pedido = pedidosGlobal.find(p => p.id === id);
+  if (!pedido) return;
+
+  await actualizarEstadoVenta(id, nuevoEstado);
+
+
+  let mensaje = `Hola ${pedido.nombre || ""} ${pedido.apellido || ""} 👋\n\n`;
+
+  if (nuevoEstado === "Preparando") mensaje += "✅ Tu pedido fue ACEPTADO\n";
+  if (nuevoEstado === "Cancelado") mensaje += "❌ Tu pedido fue CANCELADO\n";
+  if (nuevoEstado === "Listo") mensaje += "📦 Tu pedido está LISTO\n";
+  if (nuevoEstado === "Entregado") mensaje += "🎉 Tu pedido fue ENTREGADO\n";
+
+  mensaje += `\n💰 Total: $${pedido.total}`;
+  mensaje += `\n🚚 Entrega: ${pedido.entrega}`;
+
+  if (pedido.entrega?.toLowerCase().includes("env")) {
+    mensaje += `\n📍 Dirección: ${pedido.direccion}`;
+  }
+
+  mensaje += `\n\nGracias por tu compra 🍹`;
+
+  const tel = limpiarTelefono(pedido.telefono);
+  window.open(
+    `https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`,
+    "_blank"
+  );
+
+
 
   const wspMsg = encodeURIComponent(
     `Hola! 👋 Te hablamos de VLACK POINT.\n\n✅ Tu pedido está en estado: ${estado}\n💰 Total: $${total}\n\nGracias por tu compra 🍸`
@@ -559,39 +648,46 @@ function botonesSegunEstado(id, estado, telefono, total) {
     <button class="btn-accion" onclick="cambiarEstadoPedido('${id}','Pendiente')">↩️ Reabrir</button>
     ${btnWhatsApp}
   `;
-}
+
 
 async function cambiarEstadoPedido(id, nuevoEstado) {
+  const pedido = pedidosGlobal.find(p => p.id === id);
+  if (!pedido) return;
+
   await actualizarEstadoVenta(id, nuevoEstado);
+  enviarWhatsAppEstado(pedido, nuevoEstado);
 }
 
-function abrirWhatsApp(telefono, msg) {
-  if (!telefono) {
-    alert("Este pedido no tiene teléfono cargado.");
-    return;
+function enviarWhatsAppEstado(pedido, nuevoEstado) {
+  if (!pedido || !pedido.telefono) return;
+
+  let mensaje = `Hola ${pedido.nombre || ""} ${pedido.apellido || ""} 👋\n\n`;
+
+  if (nuevoEstado === "Preparando") mensaje += "✅ Tu pedido fue ACEPTADO\n";
+  if (nuevoEstado === "Cancelado") mensaje += "❌ Tu pedido fue CANCELADO\n";
+  if (nuevoEstado === "Listo") mensaje += "📦 Tu pedido está LISTO\n";
+  if (nuevoEstado === "Entregado") mensaje += "🎉 Tu pedido fue ENTREGADO\n";
+
+  mensaje += `\n💰 Total: $${pedido.total}`;
+  mensaje += `\n🚚 Entrega: ${pedido.entrega}`;
+
+  if (pedido.entrega?.toLowerCase().includes("env")) {
+    mensaje += `\n📍 Dirección: ${pedido.direccion}`;
   }
-  window.open(`https://wa.me/${telefono}?text=${msg}`, "_blank");
+
+  mensaje += `\n\nGracias por tu compra 🍹`;
+
+  const tel = limpiarTelefono(pedido.telefono);
+  window.open(
+    `https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`,
+    "_blank"
+  );
 }
 
-function formatearFechaPedido(p) {
-  try {
-    if (p.timestamp && typeof p.timestamp.toDate === "function") {
-      return p.timestamp.toDate().toLocaleString();
-    }
-    if (p.timestamp instanceof Date) return p.timestamp.toLocaleString();
-    if (p.fechaHora) return p.fechaHora;
-    return "Sin fecha";
-  } catch (e) {
-    return "Sin fecha";
-  }
-}
 
-function limpiarTelefono(tel) {
-  if (!tel) return "";
-  const limpio = String(tel).replace(/\D/g, "");
-  if (limpio.startsWith("54")) return limpio;
-  return "54" + limpio;
-}
+ 
+
+
 
 function filtrarPedidosEstado(estado) {
   filtroPedidos = estado;
@@ -661,6 +757,9 @@ onAuthStateChanged(auth, (user) => {
     try { document.getElementById("adminPanel").style.display = "block"; } catch(e) {}
     try { cargarTodo(); } catch(e) { console.warn("cargarTodo failed", e); }
 
+    // 🔥 CLAVE ABSOLUTA
+    iniciarPedidosEnTiempoReal();
+
   } else {
     if (statusEl) statusEl.textContent = "No autenticado";
     document.querySelectorAll(".admin-action").forEach(b => b.disabled = true);
@@ -669,3 +768,43 @@ onAuthStateChanged(auth, (user) => {
     try { document.getElementById("adminPanel").style.display = "none"; } catch(e) {}
   }
 });
+}
+function enviarWhatsAppCliente(pedido) {
+  if (!pedido || !pedido.telefono) {
+    alert("Este pedido no tiene teléfono cargado");
+    return;
+  }
+
+  let mensaje = `Hola 👋\n\n`;
+  mensaje += `🧾 *Estado:* ${pedido.estado}\n`;
+  mensaje += `💰 *Total:* $${pedido.total}\n`;
+  mensaje += `🚚 *Entrega:* ${pedido.entrega}\n`;
+
+  if (pedido.entrega?.toLowerCase().includes("env")) {
+    mensaje += `📍 *Dirección:* ${pedido.direccion}\n`;
+  }
+
+  mensaje += `\nGracias por tu compra 🍹`;
+
+  const tel = limpiarTelefono(pedido.telefono);
+  window.open(
+    `https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`,
+    "_blank"
+  );
+}
+async function cambiarEstadoPedido(id, nuevoEstado) {
+  await actualizarEstadoVenta(id, nuevoEstado);
+}
+function detectarPedidosNuevos(pedidos) {
+  let hayNuevo = false;
+
+  pedidos.forEach(p => {
+    if (p.estado === "Pendiente" && !pedidosVistos.has(p.id)) {
+      pedidosVistos.add(p.id);
+      p.__nuevo = true; // marca visual
+      hayNuevo = true;
+    }
+  });
+
+  if (hayNuevo) reproducirSonidoPedido();
+}

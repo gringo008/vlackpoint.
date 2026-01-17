@@ -138,8 +138,7 @@ window.agregarCarrito = function (nombre, precio, imagen) {
   });
 
   persistirCarrito();
-  animarCarrito();
-  openCart();
+  animarCarrito(); // ✅ SOLO animación, NO abre el carrito
 };
 
 function persistirCarrito() {
@@ -223,14 +222,21 @@ window.finalizarPedido = async function () {
     return;
   }
 
-  const metodo = document.getElementById("paymentMethod")?.value || "Efectivo";
-  const entrega = document.getElementById("deliveryMethod")?.value || "Retiro";
-
-  const direccion = cleanString(document.getElementById("direccion")?.value);
+  const nombre = cleanString(document.getElementById("nombreCliente")?.value);
+  const apellido = cleanString(document.getElementById("apellidoCliente")?.value);
   const telefono = cleanString(document.getElementById("telefono")?.value);
 
+  if (!nombre || !apellido || !telefono) {
+    alert("⚠️ Completá nombre, apellido y teléfono.");
+    return;
+  }
+
+  const metodo = document.getElementById("paymentMethod")?.value || "Efectivo";
+  const entrega = document.getElementById("deliveryMethod")?.value || "Retiro";
+  const direccion = cleanString(document.getElementById("direccion")?.value);
+
   if (entrega === "Envío a domicilio" && !direccion) {
-    alert("⚠️ Tenés que ingresar una dirección.");
+    alert("⚠️ Tenés que ingresar la dirección para el envío.");
     return;
   }
 
@@ -244,36 +250,44 @@ window.finalizarPedido = async function () {
       telefono,
       direccion: entrega === "Envío a domicilio" ? direccion : "Retiro",
       metodo,
-      entrega
+      entrega,
+      notas: `${nombre} ${apellido}`
     });
   } catch (e) {
     console.error("Error guardando venta:", e);
   }
 
-  // WhatsApp
-  let mensaje = `📦 *NUEVO PEDIDO*%0A%0A`;
-  if (pedidoId) mensaje += `🆔 Pedido: ${pedidoId}%0A%0A`;
+  // 📲 WHATSAPP
+  let mensaje = `NUEVO PEDIDO\n\n`;
+
+  if (pedidoId) mensaje += `Pedido: ${pedidoId}\n\n`;
+
+  mensaje += `Cliente: ${nombre} ${apellido}\n`;
+  mensaje += `Teléfono: ${telefono}\n\n`;
 
   cart.forEach(p => {
-    mensaje += `- ${p.nombre}: $${p.precio}%0A`;
+    mensaje += `- ${p.nombre} ($${p.precio})\n`;
   });
 
-  mensaje += `%0A*Total:* $${total}%0A`;
-  mensaje += `*Pago:* ${metodo}%0A`;
-  mensaje += `*Entrega:* ${entrega}%0A`;
+  mensaje += `\nTotal: $${total}\n`;
+  mensaje += `Pago: ${metodo}\n`;
+  mensaje += `Entrega: ${entrega}\n`;
 
   if (entrega === "Envío a domicilio") {
-    mensaje += `*Dirección:* ${direccion}%0A`;
-    mensaje += `*Teléfono:* ${telefono}%0A`;
+    mensaje += `Dirección: ${direccion}\n`;
   }
 
-  window.open(
-    `https://wa.me/?text=${mensaje}`,
-    "_blank"
-  );
+  const mensajeCodificado = encodeURIComponent(mensaje);
 
-  // limpiar
+  window.open(
+  `https://wa.me/5493516577826?text=${mensajeCodificado}`,
+  "_blank"
+);
+
+
+  // 🧹 LIMPIAR
   cart = [];
-  persistirCarrito();
+  localStorage.removeItem("carrito");
+  actualizarCartCount();
   closeCart();
 };
