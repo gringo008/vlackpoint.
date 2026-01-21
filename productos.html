@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🍹 Productos - Admin VLACK</title>
   <link rel="stylesheet" href="admin.css">
 </head>
@@ -12,104 +11,121 @@
 <!-- 🔐 LOGIN -->
 <div class="login-container" id="loginBox">
   <h2>🔐 INGRESAR ADMIN</h2>
-  <input type="email" id="user" placeholder="📧 Usuario (email)">
-  <input type="password" id="pass" placeholder="🔑 Contraseña">
-  <button onclick="login()">✓ Ingresar</button>
+  <input type="email" id="user" placeholder="Email">
+  <input type="password" id="pass" placeholder="Contraseña">
+  <button onclick="login()">Ingresar</button>
 </div>
 
-<!-- 🧭 PANEL PRODUCTOS -->
+<!-- 🧭 PANEL -->
 <div id="productosPanel" style="display:none; padding:20px;">
 
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <h1>🍹 Administración de Productos</h1>
-    <button onclick="logout()">🚪 Cerrar sesión</button>
-  </div>
-
+  <h1>🍹 Administración de Productos</h1>
   <p id="adminStatus"></p>
 
-  <!-- NAV -->
   <nav class="nav-bar">
     <button onclick="mostrarSeccion('tragos')">🍸 Tragos</button>
     <button onclick="mostrarSeccion('promos')">⭐ Promos</button>
     <button onclick="mostrarSeccion('comidas')">🍕 Comidas</button>
     <button onclick="location.href='admin.html'">⬅ Volver</button>
+    <button onclick="logout()">🚪 Salir</button>
   </nav>
 
   <!-- ================= TRAGOS ================= -->
   <section id="seccion-tragos" class="seccion-panel">
-    <h3>🍸 Agregar Trago</h3>
 
-    <input id="tragosNombre" placeholder="Nombre">
+    <h3>➕ Agregar Trago</h3>
+
+    <input id="tragosNombre" placeholder="Nombre del trago">
     <input id="tragosPrecio" type="number" placeholder="Precio">
 
-    <label>🖼️ Imagen:</label>
+    <textarea
+      id="tragosDescripcion"
+      placeholder="Descripción / ingredientes del trago"
+      rows="3"
+    ></textarea>
+
+    <label>🖼 Imagen:</label>
     <select id="tragosImagenSelect">
-      <option value="">-- Elegir imagen --</option>
-      <option value="img/flynpaff y serenito.jpeg">flynpaff y serenito</option>
-      <option value="img/flynpaff.jpeg">flynpaff</option>
-      <option value="img/lemondchamp.jpeg">lemondchamp</option>
-      <option value="img/milipili.jpeg">milipili</option>
-      <option value="img/sangria frozzen.jpg">sangria frozzen</option>
-      <option value="img/serenito con vos.jpeg">serenito con vos</option>
+   <option value="img/trago-flynpaff.png">Trago Flynpaff</option>
+<option value="img/trago-lemondchamp.png">Trago Lemondchamp</option>
+<option value="img/trago-mocha-vlack.jpg">Trago Mocha Vlack</option>
+<option value="img/trago-sangria.jpg">Trago Sangría</option>
+<option value="img/trago serenito.png">Trago SERENITO</option>
+<option value="img/trago-sangria.jpg">Trago MILI PILI</option>
+
     </select>
 
-    <input id="tragosImagenURL" placeholder="O pegar URL de imagen">
+    <input id="tragosImagenURL" placeholder="O pegar URL externa">
 
     <button onclick="agregar('tragos')">Agregar</button>
 
-    <h3>Listado</h3>
+    <h3>📋 Listado</h3>
     <div id="lista-tragos"></div>
   </section>
 
   <!-- ================= PROMOS ================= -->
   <section id="seccion-promos" class="seccion-panel" style="display:none;">
-    <h3>⭐ Agregar Promo</h3>
 
-    <input id="promosNombre" placeholder="Nombre">
+    <h3>➕ Agregar Promo</h3>
+
+    <input id="promosNombre" placeholder="Nombre promo">
     <input id="promosPrecio" type="number" placeholder="Precio">
 
-    <label>🖼️ Imagen:</label>
+    <textarea
+      id="promosDescripcion"
+      placeholder="Descripción de la promo"
+      rows="3"
+    ></textarea>
+
     <select id="promosImagenSelect">
       <option value="">-- Elegir imagen --</option>
-      <option value="img/flynpaff y serenito.jpeg">flynpaff y serenito</option>
-      <option value="img/flynpaff.jpeg">flynpaff</option>
-      <option value="img/lemondchamp.jpeg">lemondchamp</option>
-      <option value="img/milipili.jpeg">milipili</option>
-      <option value="img/sangria frozzen.jpg">sangria frozzen</option>
-      <option value="img/serenito con vos.jpeg">serenito con vos</option>
+      <option value="img/4 x 3 FLYNPAFF.png">Promo 4x3 Flynpaff</option>
+      <option value="img/Imagen Santi con milipili y serenito.jpg">
+        Santi Milipili Serenito
+      </option>
+      <option value="img/Imagen Santi con milipili y serenito iluminada.jpg">
+        Santi Iluminada
+      </option>
+      <option value="img/promo-sangria-x2.png">
+  Sangria x 2
+</option>
+
     </select>
 
-    <input id="promosImagenURL" placeholder="O pegar URL de imagen">
+    <input id="promosImagenURL" placeholder="O URL externa">
 
     <button onclick="agregar('promos')">Agregar</button>
 
-    <h3>Listado</h3>
+    <h3>📋 Listado</h3>
     <div id="lista-promos"></div>
   </section>
 
   <!-- ================= COMIDAS ================= -->
   <section id="seccion-comidas" class="seccion-panel" style="display:none;">
-    <h3>🍕 Agregar Comida</h3>
 
-    <input id="comidasNombre" placeholder="Nombre">
+    <h3>➕ Agregar Comida</h3>
+
+    <input id="comidasNombre" placeholder="Nombre comida">
     <input id="comidasPrecio" type="number" placeholder="Precio">
 
-    <label>🖼️ Imagen:</label>
+    <textarea
+      id="comidasDescripcion"
+      placeholder="Descripción del producto"
+      rows="3"
+    ></textarea>
+
     <select id="comidasImagenSelect">
       <option value="">-- Elegir imagen --</option>
-      <option value="img/flynpaff y serenito.jpeg">flynpaff y serenito</option>
-      <option value="img/flynpaff.jpeg">flynpaff</option>
-      <option value="img/lemondchamp.jpeg">lemondchamp</option>
-      <option value="img/milipili.jpeg">milipili</option>
-      <option value="img/sangria frozzen.jpg">sangria frozzen</option>
-      <option value="img/serenito con vos.jpeg">serenito con vos</option>
+      <option value="img/Logo de vlack Point drinks.jpg">
+        Logo Vlack Point Drinks
+      </option>
     </select>
 
-    <input id="comidasImagenURL" placeholder="O pegar URL de imagen">
+    <input id="comidasImagenURL" placeholder="O URL externa">
 
     <button onclick="agregar('comidas')">Agregar</button>
 
-    <h3>Listado</h3>
+    <h3>📋 Listado</h3>
     <div id="lista-comidas"></div>
   </section>
 
@@ -129,8 +145,7 @@
     addDoc,
     getDocs,
     deleteDoc,
-    doc,
-    updateDoc
+    doc
   } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
   // LOGIN
@@ -138,10 +153,8 @@
     signInWithEmailAndPassword(auth, user.value, pass.value)
       .catch(() => alert("Login incorrecto"));
 
-  // LOGOUT
   window.logout = () => signOut(auth);
 
-  // AUTH
   onAuthStateChanged(auth, user => {
     if (user) {
       loginBox.style.display = "none";
@@ -154,13 +167,12 @@
     }
   });
 
-  // NAV
-  window.mostrarSeccion = (sec) => {
-    document.querySelectorAll(".seccion-panel").forEach(s => s.style.display = "none");
+  window.mostrarSeccion = sec => {
+    document.querySelectorAll(".seccion-panel")
+      .forEach(s => s.style.display = "none");
     document.getElementById(`seccion-${sec}`).style.display = "block";
   };
 
-  // CRUD
   async function cargarTodo() {
     cargar("tragos");
     cargar("promos");
@@ -170,52 +182,50 @@
   async function cargar(col) {
     const cont = document.getElementById(`lista-${col}`);
     cont.innerHTML = "Cargando...";
-    const data = await getDocs(collection(db, col));
+    const snap = await getDocs(collection(db, col));
 
-    cont.innerHTML = data.docs.map(d => {
+    cont.innerHTML = snap.docs.map(d => {
       const p = d.data();
       return `
-        <div style="border:1px solid #444; padding:10px; margin:5px;">
+        <div style="border:1px solid #333; padding:10px; margin:10px;">
           <b>${p.nombre}</b> - $${p.precio}<br>
-          ${p.imagen ? `<img src="${p.imagen}" width="80"><br>` : ""}
-          <button onclick="editar('${col}','${d.id}')">✏️</button>
+          ${p.descripcion ? `<small>${p.descripcion}</small><br>` : ""}
+          ${p.imagen ? `<img src="${p.imagen}?v=${Date.now()}" width="80">` : ""}
+          <br>
           <button onclick="eliminar('${col}','${d.id}')">❌</button>
         </div>
       `;
     }).join("");
   }
 
-  window.agregar = async (col) => {
+  window.agregar = async col => {
     const nombre = document.getElementById(col + "Nombre").value;
     const precio = document.getElementById(col + "Precio").value;
-    const imgSelect = document.getElementById(col + "ImagenSelect").value;
-    const imgURL = document.getElementById(col + "ImagenURL").value;
+    const descripcionInput = document.getElementById(col + "Descripcion");
+    const descripcion = descripcionInput ? descripcionInput.value : "";
 
-    const imagen = imgSelect || imgURL;
+    const sel = document.getElementById(col + "ImagenSelect").value;
+    const url = document.getElementById(col + "ImagenURL").value;
+    const imagen = sel || url;
 
     if (!nombre || !precio) {
       alert("Faltan datos");
       return;
     }
 
-    await addDoc(collection(db, col), { nombre, precio, imagen });
+    await addDoc(collection(db, col), {
+      nombre,
+      precio,
+      imagen,
+      descripcion
+    });
+
     cargar(col);
   };
 
   window.eliminar = async (col, id) => {
     if (!confirm("Eliminar producto?")) return;
     await deleteDoc(doc(db, col, id));
-    cargar(col);
-  };
-
-  window.editar = async (col, id) => {
-    const nombre = prompt("Nuevo nombre");
-    const precio = prompt("Nuevo precio");
-    const imagen = prompt("Nueva imagen (URL)");
-
-    if (!nombre || !precio) return;
-
-    await updateDoc(doc(db, col, id), { nombre, precio, imagen });
     cargar(col);
   };
 </script>

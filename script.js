@@ -110,15 +110,25 @@ function cargarProductos(lista) {
     const nombre = cleanString(item.nombre) || "Producto";
     const precio = toNumber(item.precio);
     const imagen = cleanString(item.imagen) || "img/default.jpg";
+    const descripcion = cleanString(item.descripcion); // ✅ NUEVO
 
     card.innerHTML = `
       <img src="${imagen}" alt="${nombre}">
       <div class="drink-card-content">
         <h3>${nombre}</h3>
-        <p>$${precio}</p>
-        <button onclick="agregarCarrito('${escapeQuotes(nombre)}', ${precio}, '${escapeQuotes(imagen)}')">
-          Agregar 🛒
-        </button>
+
+        ${
+          descripcion
+            ? `<p class="drink-desc">${descripcion}</p>`
+            : ""
+        }
+
+        <div class="drink-footer">
+          <span class="drink-price">$${precio}</span>
+          <button onclick="agregarCarrito('${escapeQuotes(nombre)}', ${precio}, '${escapeQuotes(imagen)}')">
+            Agregar 🛒
+          </button>
+        </div>
       </div>
     `;
 

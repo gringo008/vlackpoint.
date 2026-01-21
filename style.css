@@ -147,12 +147,26 @@ header h1 {
 
 .drink-card img {
     width: 100%;
-    height: 300px;
-    object-fit: cover;
+    height: 350px;
+
+    /* ✅ CLAVE: mostrar el trago completo */
+    object-fit: contain;
+
+    /* Fondo elegante para que no quede vacío */
+    background: radial-gradient(circle, #111 0%, #000 100%);
+
     border-radius: 15px 15px 0 0;
     display: block;
-    transition: transform 0.3s ease;
+
+    /* Animación suave */
+    transition: transform 0.25s ease;
 }
+
+/* Hover sin cortar la imagen */
+.drink-card:hover img {
+    transform: scale(1.02);
+}
+
 
 .drink-card:hover img {
     transform: scale(1.1);
