@@ -45,15 +45,16 @@
     ></textarea>
 
     <label>🖼 Imagen:</label>
-    <select id="tragosImagenSelect">
-   <option value="img/trago-flynpaff.png">Trago Flynpaff</option>
-<option value="img/trago-lemondchamp.png">Trago Lemondchamp</option>
-<option value="img/trago-mocha-vlack.jpg">Trago Mocha Vlack</option>
-<option value="img/trago-sangria.jpg">Trago Sangría</option>
-<option value="img/trago serenito.png">Trago SERENITO</option>
-<option value="img/trago-sangria.jpg">Trago MILI PILI</option>
+  <select id="tragosImagenSelect">
+  <option value="">-- Elegir imagen --</option>
+  <option value="img/FLYNPAFF.png">Trago Flynpaff</option>
+  <option value="img/LEMONDCHAMP.png">Trago Lemondchamp</option>
+  <option value="img/MOCHAVLACK.jpg">Trago Mocha Vlack</option>
+  <option value="img/SANGRIA.jpg">Trago Sangría</option>
+  <option value="img/SERENITO.png">Trago Serenito</option>
+</select>
 
-    </select>
+
 
     <input id="tragosImagenURL" placeholder="O pegar URL externa">
 
@@ -64,33 +65,45 @@
   </section>
 
   <!-- ================= PROMOS ================= -->
-  <section id="seccion-promos" class="seccion-panel" style="display:none;">
+<section id="seccion-promos" class="seccion-panel" style="display:none;">
 
-    <h3>➕ Agregar Promo</h3>
+  <h3>➕ Agregar Promo</h3>
 
-    <input id="promosNombre" placeholder="Nombre promo">
-    <input id="promosPrecio" type="number" placeholder="Precio">
+  <input id="promosNombre" placeholder="Nombre promo">
+  <input id="promosPrecio" type="number" placeholder="Precio">
 
-    <textarea
-      id="promosDescripcion"
-      placeholder="Descripción de la promo"
-      rows="3"
-    ></textarea>
+  <textarea
+    id="promosDescripcion"
+    placeholder="Descripción de la promo"
+    rows="3"
+  ></textarea>
 
-    <select id="promosImagenSelect">
-      <option value="">-- Elegir imagen --</option>
-      <option value="img/4 x 3 FLYNPAFF.png">Promo 4x3 Flynpaff</option>
-      <option value="img/Imagen Santi con milipili y serenito.jpg">
-        Santi Milipili Serenito
-      </option>
-      <option value="img/Imagen Santi con milipili y serenito iluminada.jpg">
-        Santi Iluminada
-      </option>
-      <option value="img/promo-sangria-x2.png">
-  Sangria x 2
-</option>
+  <select id="promosImagenSelect">
+    <option value="">-- Elegir imagen --</option>
 
-    </select>
+    <option value="img/4 x 3 FLYNPAFF.png">
+      Promo 4x3 Flynpaff
+    </option>
+
+    <option value="img/MILYSERENITO.jpg">
+      Milipili + Serenito
+    </option>
+
+    <option value="img/MILYSERENITO2.jpg">
+      Milipili + Serenito Iluminada
+    </option>
+
+    <option value="img/SANGRIAX2.png">
+      Sangría x 2
+    </option>
+  </select>
+
+  <input id="promosImagenURL" placeholder="O URL externa">
+
+  <button onclick="agregar('promos')">Agregar</button>
+
+</section>
+
 
     <input id="promosImagenURL" placeholder="O URL externa">
 
@@ -131,7 +144,6 @@
 
 </div>
 
-<!-- 🔥 SCRIPT -->
 <script type="module">
   import { auth, db } from "./firebase.js";
   import {
@@ -188,7 +200,7 @@
       const p = d.data();
       return `
         <div style="border:1px solid #333; padding:10px; margin:10px;">
-          <b>${p.nombre}</b> - $${p.precio}<br>
+          <b>${p.nombre || "Sin nombre"}</b> - $${p.precio || 0}<br>
           ${p.descripcion ? `<small>${p.descripcion}</small><br>` : ""}
           ${p.imagen ? `<img src="${p.imagen}?v=${Date.now()}" width="80">` : ""}
           <br>
@@ -220,6 +232,13 @@
       descripcion
     });
 
+    // limpiar formulario
+    document.getElementById(col + "Nombre").value = "";
+    document.getElementById(col + "Precio").value = "";
+    if (descripcionInput) descripcionInput.value = "";
+    document.getElementById(col + "ImagenSelect").value = "";
+    document.getElementById(col + "ImagenURL").value = "";
+
     cargar(col);
   };
 
@@ -229,6 +248,3 @@
     cargar(col);
   };
 </script>
-
-</body>
-</html>
